@@ -1,0 +1,305 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Coffee Kraft | Premium Pro Edition</title>
+
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;700&family=Syne:wght@800&display=swap"
+        rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <link rel="stylesheet" href="css/style.css">
+</head>
+
+<body>
+    <!-- TRACK ORDER MODAL OVERLAY -->
+    <div class="modal fade" id="trackOrderModal" tabindex="-1">
+        <div class="modal-dialog modal-dialog-centered modal-md">
+            <div class="modal-content p-4">
+                <h2 class="fw-bold mb-3 text-center" style="font-family: 'Syne'; text-transform: uppercase;">TRACK YOUR
+                    BREW</h2>
+
+                <div class="privacy-modal-body mb-3">
+                    <h5>Order Status</h5>
+                    <p class="text-success"><i class="fas fa-motorcycle me-2"></i> <b>Rider is on the way!</b></p>
+
+                    <h5>Estimated Delivery Time</h5>
+                    <p class="fs-4 text-dark fw-bold"><i class="fas fa-clock me-2"></i> 25 Minutes</p>
+
+                    <h5>Rider Details</h5>
+                    <p><i class="fas fa-user me-2"></i> Name: <span id="rider-name">Loading...</span></p>
+                    <p><i class="fas fa-phone me-2"></i> Contact: <span id="rider-phone">Loading...</span></p>
+
+                    <h5>Order Details</h5>
+                    <div id="track-order-items" class="small text-muted">No active items found. Please place an order
+                        first!</div>
+                </div>
+
+                <button class="cat-chip w-100 bg-dark text-white" data-bs-dismiss="modal">CLOSE</button>
+            </div>
+        </div>
+    </div>
+    <!-- REFUND POLICY MODAL OVERLAY -->
+    <div class="modal fade" id="refundModal" tabindex="-1">
+        <div class="modal-dialog modal-dialog-centered modal-md">
+            <div class="modal-content p-4">
+                <h2 class="fw-bold mb-3 text-center" style="font-family: 'Syne'; text-transform: uppercase;">REFUND
+                    POLICY</h2>
+
+                <div class="privacy-modal-body mb-3">
+                    <p>At Coffee Kraft, we brew every cup with absolute precision. However, if your experience wasn't
+                        perfect, here is our straightforward refund framework:</p>
+
+                    <h5>1. Wrong or Damaged Order</h5>
+                    <p>If you receive the wrong item or if it gets spilled/damaged during delivery, please share a
+                        picture of the brutalist boxes or items with our helpline. We will instantly process a free
+                        replacement or a full refund.</p>
+
+                    <h5>2. Delivery Delays</h5>
+                    <p>The true essence of our signature blends and hot brews lies in their freshness. If your order is
+                        significantly delayed beyond the 25-minute tracking time and the coffee gets cold, you are fully
+                        eligible to file a claim.</p>
+
+                    <h5>3. Cancellation Window</h5>
+                    <p>Cancellations can only be made within 2 minutes of placing the order. Once our team starts
+                        roasting and grinding the fresh beans for your brew, cancellation or refund will no longer be
+                        possible.</p>
+                </div>
+
+                <button class="cat-chip w-100 bg-dark text-white" data-bs-dismiss="modal">I UNDERSTAND</button>
+            </div>
+        </div>
+    </div>
+    <div id="order-loader">SAVING YOUR BREW... ☕</div>
+
+    <div id="welcome-gate">
+        <div class="gate-box">
+            <img src="https://cdn-icons-png.flaticon.com/512/924/924514.png" class="gate-logo" alt="Coffee Kraft Logo">
+            <h1 class="gate-title">COFFEE<br>KRAFT</h1>
+            <div class="gate-subtitle">☕ premium coffee • signature blends</div>
+
+            <div class="gate-tabs">
+                <button id="tab-signin-btn" class="gate-tab active" onclick="switchGateTab('signin')">SIGN IN</button>
+                <button id="tab-signup-btn" class="gate-tab" onclick="switchGateTab('signup')">SIGN UP</button>
+            </div>
+
+            <div id="gate-signin-form">
+                <input type="text" id="gate_li_u" class="gate-input form-control" placeholder="Username">
+                <input type="password" id="gate_li_p" class="gate-input form-control" placeholder="Password">
+                <button class="gate-btn" onclick="handleGateSignIn()">SIGN IN</button>
+            </div>
+
+            <div id="gate-signup-form" style="display:none;">
+                <input type="text" id="gate_su_u" class="gate-input form-control" placeholder="New Username">
+                <input type="password" id="gate_su_p" class="gate-input form-control"
+                    placeholder="Password (Min 6 Chars)">
+                <textarea id="gate_su_addr" class="gate-input form-control" placeholder="Delivery Address"
+                    rows="2"></textarea>
+                <button class="gate-btn" onclick="handleGateSignUp()">REGISTER</button>
+            </div>
+        </div>
+    </div>
+
+    <div class="main-wrapper">
+        <header class="header-box">
+            <div class="header-left">
+                <div class="logo-container" style="cursor: pointer;" onclick="changeCategory('all')">
+                    <img src="https://cdn-icons-png.flaticon.com/512/924/924514.png" class="beans-svg"
+                        alt="Coffee Beans Logo">
+                    <h1 class="logo-text-brand">COFFEE KRAFT</h1>
+                </div>
+            </div>
+
+            <div class="d-flex gap-2">
+                <button class="cat-chip" data-bs-toggle="modal" data-bs-target="#cartModal">BAG [<span
+                        id="cart-count">0</span>]</button>
+                <div id="auth-ui"></div>
+                <button class="cat-chip bg-dark text-white" onclick="showAdminLogin()">ADMIN</button>
+            </div>
+        </header>
+
+        <nav class="category-scroll px-4">
+            <div class="nav-buttons-container">
+                <button onclick="changeCategory('all')" id="nav-all" class="cat-chip active-nav">MENU</button>
+                <button onclick="changeCategory('signature')" id="nav-signature" class="cat-chip">SIGNATURE</button>
+                <button onclick="changeCategory('hot')" id="nav-hot" class="cat-chip">HOT BREWS</button>
+                <button onclick="changeCategory('shakes')" id="nav-shakes" class="cat-chip">CHILL SHAKES</button>
+                <button onclick="changeCategory('bakery')" id="nav-bakery" class="cat-chip">BAKERY</button>
+            </div>
+
+            <div class="search-wrapper-box">
+                <input type="text" id="menu-search-input" class="search-input-field" placeholder="Search Item..."
+                    oninput="handleMenuSearch()">
+                <button class="cat-chip" onclick="toggleSearchField()"><i class="fas fa-search"></i></button>
+            </div>
+        </nav>
+        <main class="container-fluid p-4">
+            <div id="product-display" class="row g-4"></div>
+        </main>
+
+        <footer class="footer-kraft">
+            <div class="container-fluid">
+                <div class="row g-4">
+                    <div class="col-md-3">
+                        <h4>Our Branches</h4>
+                        <ul class="footer-links">
+                            <li><i class="fas fa-map-marker-alt"></i> Bahria Phase 7, Rawalpindi</li>
+                            <li><i class="fas fa-map-marker-alt"></i> Sector C, Bahria Lahore</li>
+                            <li><i class="fas fa-map-marker-alt"></i> DHA Phase 2, Islamabad</li>
+                        </ul>
+                    </div>
+                    <div class="col-md-3">
+                        <h4>Quick Help</h4>
+                        <ul class="footer-links">
+                            <li><i class="fas fa-phone"></i> Helpline: +92 312 4567890</li>
+                            <li><i class="fas fa-envelope"></i> help@coffeekraft.com</li>
+                            <li><i class="fas fa-clock"></i> 09:00 AM - 02:00 AM</li>
+                        </ul>
+                    </div>
+                    <div class="col-md-3">
+                        <h4>Info Links</h4>
+                        <ul class="footer-links">
+                            <li><a href="#" class="text-white text-decoration-none" data-bs-toggle="modal"
+                                    data-bs-target="#privacyModal">Privacy Policy</a></li>
+                            <li><a href="#" class="text-white text-decoration-none" data-bs-toggle="modal"
+                                    data-bs-target="#refundModal">Refund Policy</a></li>
+                            <li><a href="#" class="text-white text-decoration-none"
+                                    onclick="openTrackOrderModal(event)">Track Order</a></li>
+                        </ul>
+                    </div>
+                    <div class="col-md-3 text-center">
+                        <h4>Social Media</h4>
+                        <div class="fs-3 mt-2">
+                            <i class="fab fa-instagram me-3"></i>
+                            <i class="fab fa-facebook me-3"></i>
+                            <i class="fab fa-whatsapp"></i>
+                        </div>
+                    </div>
+                </div>
+                <div class="copyright-bar">
+                    &copy; 2026 COFFEE KRAFT PREMIUM LTD. ALL RIGHTS RESERVED. COPYRIGHT PROTECTED.
+                </div>
+            </div>
+        </footer>
+    </div>
+    <div class="modal fade" id="privacyModal" tabindex="-1">
+        <div class="modal-dialog modal-dialog-centered modal-md">
+            <div class="modal-content p-4">
+                <h2 class="fw-bold mb-3 text-center" style="font-family: 'Syne'; text-transform: uppercase;">PRIVACY
+                    POLICY</h2>
+
+                <div class="privacy-modal-body mb-3">
+                    <p>Welcome to Coffee Kraft Premium Ltd. We respect your security and take our users privacy
+                        parameters extremely seriously.</p>
+
+                    <h5>1. Data Collection</h5>
+                    <p>We do not store passwords permanently across tracking machines. Your registration details and
+                        active configurations are securely verified locally via runtime modules.</p>
+
+                    <h5>2. Session Lifecycles</h5>
+                    <p>To maximize protective architecture checkpoints, your active session variables expire dynamically
+                        immediately once the screen browser container is closed.</p>
+
+                    <h5>3. Electronic Payments</h5>
+                    <p>Financial details, credit card numbers, or full address logs used during module checkouts are
+                        isolated and never transmitted to unsafe third-party networks.</p>
+                </div>
+
+                <button class="cat-chip w-100 bg-dark text-white" data-bs-dismiss="modal">I UNDERSTAND</button>
+            </div>
+        </div>
+    </div>
+    <div class="modal fade" id="adminModal" tabindex="-1">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content p-4">
+                <div id="admin-login-ui">
+                    <h4 class="fw-bold mb-3 text-center">ADMIN ACCESS</h4>
+                    <input type="text" id="adm_u" class="checkout-input form-control" placeholder="USERNAME">
+                    <input type="password" id="adm_p" class="checkout-input form-control" placeholder="PASSWORD">
+                    <div class="row g-2">
+                        <div class="col-6"><button class="cat-chip bg-secondary text-white w-100"
+                                data-bs-dismiss="modal">BACK</button></div>
+                        <div class="col-6"><button class="cat-chip w-100 bg-dark text-white"
+                                onclick="handleAdminLogin()">CONFIRM</button></div>
+                    </div>
+                </div>
+                <div id="admin-dash-ui" style="display:none;">
+                    <h4 class="fw-bold mb-3 text-center">RESTOCK PANEL</h4>
+                    <select id="restock-cat" class="checkout-input form-control" onchange="loadRestockOptions()">
+                        <option value="">SELECT CATEGORY</option>
+                        <option value="signature">SIGNATURE</option>
+                        <option value="hot">HOT BREWS</option>
+                        <option value="shakes">CHILL SHAKES</option>
+                        <option value="bakery">BAKERY</option>
+                    </select>
+                    <div id="restock-list" class="restock-list">
+                        <p class="text-muted small m-0">Choose category first</p>
+                    </div>
+                    <input type="number" id="restock-qty" class="checkout-input form-control"
+                        placeholder="QUANTITY TO ADD">
+                    <div class="row g-2">
+                        <div class="col-6"><button class="cat-chip bg-secondary text-white w-100"
+                                onclick="location.reload()">BACK (LOGOUT)</button></div>
+                        <div class="col-6"><button class="cat-chip w-100 bg-success text-white"
+                                onclick="applyRestock()">RESTOCK NOW</button></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="modal fade" id="cartModal" tabindex="-1">
+        <div class="modal-dialog modal-lg modal-dialog-centered">
+            <div class="modal-content p-4">
+                <div class="row">
+                    <div class="col-md-5 border-end border-dark">
+                        <h2 class="fw-bold mb-3">YOUR BAG</h2>
+                        <div id="cart-list" style="max-height: 200px; overflow-y: auto;"></div>
+                        <div class="h4 p-3 bg-dark text-white fw-bold border border-dark mt-2" id="cart-total">Rs. 0
+                        </div>
+                    </div>
+                    <div class="col-md-7 ps-md-4">
+                        <h2 class="fw-bold mb-3">CHECKOUT</h2>
+                        <input type="text" id="f_name" class="checkout-input form-control" placeholder="NAME">
+                        <input type="text" id="f_phone" class="checkout-input form-control" placeholder="PHONE">
+                        <textarea id="f_address" class="checkout-input form-control"
+                            placeholder="FULL ADDRESS"></textarea>
+
+                        <div class="fw-bold mb-1 small">PAYMENT METHOD:</div>
+                        <select id="f_pay" class="checkout-input form-control" onchange="toggleCardDetails()">
+                            <option value="COD">Cash on Delivery</option>
+                            <option value="CARD">Credit / Debit Card</option>
+                        </select>
+
+                        <div id="card-panel"
+                            style="display:none; border:2px dashed #000; padding:12px; margin-bottom:12px; background:#fff;">
+                            <input type="text" id="cc_num" class="checkout-input form-control"
+                                placeholder="16 DIGIT CARD NUMBER" maxlength="16">
+                            <div class="row g-2">
+                                <div class="col-6"><input type="text" id="cc_exp" class="checkout-input form-control"
+                                        placeholder="MM/YY" maxlength="5"></div>
+                                <div class="col-6"><input type="password" id="cc_cvv"
+                                        class="checkout-input form-control" placeholder="CVV (3 DIGIT)" maxlength="3">
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="row g-2">
+                            <div class="col-6"><button class="cat-chip bg-secondary text-white w-100"
+                                    data-bs-dismiss="modal">BACK</button></div>
+                            <div class="col-6"><button class="cat-chip w-100 bg-dark text-white"
+                                    onclick="confirmOrder()">CONFIRM ORDER</button></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="app.js"></script>
+</body>
+
+</html>
