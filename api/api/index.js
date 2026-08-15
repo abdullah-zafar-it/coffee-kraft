@@ -7,24 +7,22 @@ const orderRoutes = require('../routes/orderRoutes.js');
 const authRoutes = require('../routes/authRoutes.js');
 const inventoryRoutes = require('../routes/inventoryRoutes.js');
 
-// Connect to MongoDB
 connectDB();
 
 const app = express();
 
-// Middlewares
 app.use(cors());
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
-// Routes mounting
+// Handle both direct and /api prefixed routes
+app.use('/api/auth', authRoutes);
 app.use('/auth', authRoutes);
-app.use('/orders', orderRoutes);
+
+app.use('/api/inventory', inventoryRoutes);
 app.use('/inventory', inventoryRoutes);
 
-// Backup routes (agar direct root match ho)
-app.use('/api/auth', authRoutes);
 app.use('/api/orders', orderRoutes);
-app.use('/api/inventory', inventoryRoutes);
+app.use('/orders', orderRoutes);
 
 module.exports = app;
