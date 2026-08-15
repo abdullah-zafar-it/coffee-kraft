@@ -38,3 +38,4 @@ app.listen(PORT, () => {
   console.log(`🔗 Web UI: http://localhost:${PORT}`);
   console.log(`==================================================`);
 });
+module.exports = app;
