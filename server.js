@@ -13,21 +13,18 @@ connectDB();
 
 const app = express();
 
-// Middleware
+// Middlewares
 app.use(cors());
 app.use(express.json());
+app.use(express.urlencoded({ extended: true }));
 
-// 1. Static Folders
+// 1. Static Files (Current directory & css folder)
 app.use('/css', express.static(path.join(__dirname, 'css')));
-app.use(express.static(path.join(__dirname, '.')));
+app.use(express.static(__dirname));
 
-// 2. Direct Static File Fallbacks (Vercel ke 404 fix ke liye)
+// 2. Direct Static Endpoints
 app.get('/app.js', (req, res) => {
   res.sendFile(path.join(__dirname, 'app.js'));
-});
-
-app.get('/css/style.css', (req, res) => {
-  res.sendFile(path.join(__dirname, 'css', 'style.css'));
 });
 
 app.get('/style.css', (req, res) => {
@@ -39,11 +36,12 @@ app.use('/api/orders', orderRoutes);
 app.use('/api/auth', authRoutes);
 app.use('/api/inventory', inventoryRoutes);
 
-// 4. HTML Routes
+// 4. Main HTML Route
 app.get('/', (req, res) => {
   res.sendFile(path.join(__dirname, 'index.html'));
 });
 
+// 5. Catch-all Route
 app.get('*', (req, res) => {
   res.sendFile(path.join(__dirname, 'index.html'));
 });
