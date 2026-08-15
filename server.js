@@ -17,6 +17,17 @@ const app = express();
 app.use(cors());
 app.use(express.json());
 app.use(express.static(path.join(__dirname, '.')));
+app.use(express.static(path.join(__dirname, '.')));
+app.use('/css', express.static(path.join(__dirname, 'css')));
+
+// Direct file serve routes:
+app.get('/app.js', (req, res) => {
+  res.sendFile(path.join(__dirname, 'app.js'));
+});
+
+app.get('/', (req, res) => {
+  res.sendFile(path.join(__dirname, 'index.html'));
+});
 app.use('/css', express.static(path.join(__dirname, 'css')));
 
 // API Routes
