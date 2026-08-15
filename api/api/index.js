@@ -1,6 +1,5 @@
 const express = require('express');
 const cors = require('cors');
-const path = require('path');
 require('dotenv').config();
 
 const connectDB = require('../config/db');
@@ -18,9 +17,14 @@ app.use(cors());
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
-// API Routes
-app.use('/api/orders', orderRoutes);
+// Routes mounting
+app.use('/auth', authRoutes);
+app.use('/orders', orderRoutes);
+app.use('/inventory', inventoryRoutes);
+
+// Backup routes (agar direct root match ho)
 app.use('/api/auth', authRoutes);
+app.use('/api/orders', orderRoutes);
 app.use('/api/inventory', inventoryRoutes);
 
 module.exports = app;
