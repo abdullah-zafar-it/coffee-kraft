@@ -9,14 +9,23 @@ const inventoryRoutes = require('../routes/inventoryRoutes.js');
 
 const app = express();
 
-// Database connect
-connectDB();
+// Database Connect Safely
+connectDB().catch((err) => console.error('MongoDB Connect Error:', err));
 
 app.use(cors());
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
-// Express routing
+// Base Test Routes
+app.get('/api', (req, res) => {
+    res.json({ success: true, message: 'Coffee Kraft Backend is LIVE!' });
+});
+
+app.get('/', (req, res) => {
+    res.json({ success: true, message: 'API Root is LIVE!' });
+});
+
+// Main Feature Routes
 app.use('/api/auth', authRoutes);
 app.use('/auth', authRoutes);
 
