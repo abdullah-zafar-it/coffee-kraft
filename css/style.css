@@ -495,3 +495,114 @@ body {
     border-bottom: 2px solid var(--kraft-paper);
     padding-bottom: 3px;
 }
+
+/* ==========================================
+   MOBILE & TABLET RESPONSIVE FIXES
+   ========================================== */
+
+@media (max-width: 768px) {
+
+    /* 1. Reset Body & Outer Wrapper */
+    body {
+        background-size: 100px 100px;
+    }
+
+    .main-wrapper {
+        margin: 10px;
+        box-shadow: 6px 6px 0px var(--black);
+        border-width: 3px;
+    }
+
+    /* 2. Login / Sign Up Gate Box */
+    .gate-box {
+        max-width: 95%;
+        padding: 25px 15px;
+        box-shadow: 6px 6px 0px var(--black);
+        border-width: 3px;
+    }
+
+    .gate-title {
+        font-size: 1.6rem;
+    }
+
+    /* 3. Header & Brand Logo */
+    .header-box {
+        padding: 15px;
+        flex-direction: column;
+        gap: 15px;
+        text-align: center;
+    }
+
+    .header-left {
+        flex-direction: column;
+        gap: 10px;
+    }
+
+    .logo-container {
+        flex-direction: column;
+        gap: 5px;
+    }
+
+    .logo-text-brand {
+        font-size: 1.4rem;
+    }
+
+    .beans-svg {
+        width: 55px;
+    }
+
+    /* 4. Horizontal Navigation & Search Bar */
+    .category-scroll {
+        padding: 10px 15px;
+        flex-wrap: nowrap;
+        overflow-x: auto;
+        -webkit-overflow-scrolling: touch;
+    }
+
+    .nav-buttons-container {
+        flex-shrink: 0;
+    }
+
+    .cat-chip {
+        padding: 6px 12px;
+        font-size: 0.8rem;
+        box-shadow: 2px 2px 0px var(--black);
+    }
+
+    .search-input-field.expanded-search {
+        width: 140px;
+        font-size: 0.8rem;
+    }
+
+    /* 5. Product Cards & Sections */
+    .section-title {
+        font-size: 1.3rem;
+        margin: 20px 0 10px 0;
+        border-left-width: 6px;
+        padding-left: 10px;
+    }
+
+    .menu-card {
+        box-shadow: 4px 4px 0px var(--black);
+    }
+
+    .img-wrap {
+        height: 140px;
+    }
+
+    /* 6. Modals & Popups */
+    .modal-dialog {
+        margin: 10px;
+    }
+
+    .modal-content {
+        box-shadow: 6px 6px 0px #000;
+        border-width: 3px;
+    }
+
+    /* 7. Footer */
+    .footer-kraft {
+        padding: 30px 15px 15px;
+        margin-top: 30px;
+    }
+}
