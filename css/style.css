@@ -8,11 +8,25 @@
     --danger: #9e1b1b;
 }
 
+/* Global Reset to Prevent Horizontal Overflow */
+*,
+*::before,
+*::after {
+    box-sizing: border-box !important;
+}
+
+html,
+body {
+    overflow-x: hidden !important;
+    max-width: 100% !important;
+    margin: 0;
+    padding: 0;
+}
+
 /* Beautiful Rich Coffee Doodle Background Pattern */
 body {
     font-family: 'Space Grotesk', sans-serif;
     background-color: var(--light-latte);
-    margin: 0;
     background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='160' height='160' viewBox='0 0 160 160'%3E%3Cg fill='none' stroke='%232c1b12' stroke-width='1.8' stroke-linecap='round' stroke-linejoin='round' opacity='0.16'%3E%3Cpath d='M20,32 C28,32 31,35 31,39 C31,44 26,47 18,47 C10,47 7,44 7,39 C7,35 11,32 18,32 Z M31,37 C34,37 36,39 36,41 C36,43 34,44 31,44'/%3E%3Cpath d='M15,26 C16,23 18,23 18,20 M21,26 C22,23 24,23 24,20' stroke-width='1.2'/%3E%3Cpath d='M9,51 L27,51'/%3E%3Cpath d='M75,25 C84,17 94,27 86,36 C77,44 67,34 75,25 Z' fill='%232c1b12' fill-opacity='0.15'/%3E%3Cpath d='M71,21 C76,27 80,31 87,39' stroke-width='1.5'/%3E%3Cpath d='M128,25 L144,25 L139,49 L123,49 Z'/%3E%3Cpath d='M121,25 L146,25'/%3E%3Cpath d='M134,25 L140,11' stroke-width='2.2'/%3E%3Cpath d='M30,112 C30,103 47,103 47,112 C47,123 23,123 23,112 Z'/%3E%3Cpath d='M47,108 C51,108 53,110 53,113 C53,116 51,117 47,117'/%3E%3Cpath d='M17,112 L23,112' stroke-width='2'/%3E%3Cpath d='M26,105 C27,102 29,102 29,99' stroke-width='1.2'/%3E%3Cpath d='M85,125 C94,117 104,127 96,136 C87,144 77,134 85,125 Z' fill='%232c1b12' fill-opacity='0.15'/%3E%3Cpath d='M81,121 C86,127 90,131 97,139' stroke-width='1.5'/%3E%3Cpath d='M124,106 L142,106 L140,127 C140,131 137,134 133,134 L129,134 C125,134 122,131 122,127 Z'/%3E%3Cpath d='M142,112 C146,112 148,114 148,117 C148,120 146,121 142,121'/%3E%3Ccircle cx='70' cy='80' r='2.5' fill='%232c1b12' stroke='none'/%3E%3Ccircle cx='102' cy='65' r='3' fill='%232c1b12' stroke='none'/%3E%3Ccircle cx='25' cy='75' r='2' fill='%232c1b12' stroke='none'/%3E%3C/g%3E%3C/svg%3E");
     background-size: 150px 150px;
     background-repeat: repeat;
@@ -204,9 +218,45 @@ body {
     top: 0;
     z-index: 1000;
     display: flex;
+    align-items: center;
+    justify-content: space-between;
     gap: 10px;
     padding: 12px 30px;
+}
+
+.nav-buttons-container {
+    display: flex;
+    gap: 10px;
     overflow-x: auto;
+}
+
+.search-wrapper-box {
+    display: flex;
+    align-items: center;
+    position: relative;
+    margin-left: auto;
+}
+
+.search-input-field {
+    width: 0px;
+    opacity: 0;
+    visibility: hidden;
+    border: 3px solid var(--black);
+    background: var(--white);
+    color: var(--black);
+    font-weight: 800;
+    font-size: 0.9rem;
+    padding: 6px 12px;
+    text-transform: uppercase;
+    box-shadow: 4px 4px 0px var(--black);
+    transition: width 0.3s cubic-bezier(0.4, 0, 0.2, 1), opacity 0.2s, visibility 0.2s;
+}
+
+.search-input-field.expanded-search {
+    width: 220px;
+    opacity: 1;
+    visibility: visible;
+    margin-right: 10px;
 }
 
 .section-title {
@@ -427,54 +477,6 @@ body {
     cursor: pointer;
 }
 
-.category-scroll {
-    background: var(--kraft-paper);
-    border-bottom: 4px solid var(--black);
-    position: sticky;
-    top: 0;
-    z-index: 1000;
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    gap: 10px;
-    padding: 12px 30px;
-}
-
-.nav-buttons-container {
-    display: flex;
-    gap: 10px;
-    overflow-x: auto;
-}
-
-.search-wrapper-box {
-    display: flex;
-    align-items: center;
-    position: relative;
-    margin-left: auto;
-}
-
-.search-input-field {
-    width: 0px;
-    opacity: 0;
-    visibility: hidden;
-    border: 3px solid var(--black);
-    background: var(--white);
-    color: var(--black);
-    font-weight: 800;
-    font-size: 0.9rem;
-    padding: 6px 12px;
-    text-transform: uppercase;
-    box-shadow: 4px 4px 0px var(--black);
-    transition: width 0.3s cubic-bezier(0.4, 0, 0.2, 1), opacity 0.2s, visibility 0.2s;
-}
-
-.search-input-field.expanded-search {
-    width: 220px;
-    opacity: 1;
-    visibility: visible;
-    margin-right: 10px;
-}
-
 /* Specialized Privacy Policy Modal Styling */
 .privacy-modal-body {
     max-height: 400px;
@@ -501,108 +503,117 @@ body {
    ========================================== */
 
 @media (max-width: 768px) {
-
-    /* 1. Reset Body & Outer Wrapper */
     body {
         background-size: 100px 100px;
     }
 
     .main-wrapper {
-        margin: 10px;
-        box-shadow: 6px 6px 0px var(--black);
-        border-width: 3px;
+        margin: 10px 8px !important;
+        box-shadow: 6px 6px 0px var(--black) !important;
+        border-width: 3px !important;
+        overflow: hidden !important;
     }
 
-    /* 2. Login / Sign Up Gate Box */
     .gate-box {
-        max-width: 95%;
-        padding: 25px 15px;
-        box-shadow: 6px 6px 0px var(--black);
-        border-width: 3px;
+        max-width: 95% !important;
+        padding: 25px 15px !important;
+        box-shadow: 6px 6px 0px var(--black) !important;
+        border-width: 3px !important;
     }
 
     .gate-title {
-        font-size: 1.6rem;
+        font-size: 1.6rem !important;
     }
 
-    /* 3. Header & Brand Logo */
     .header-box {
-        padding: 15px;
-        flex-direction: column;
-        gap: 15px;
-        text-align: center;
+        padding: 12px 10px !important;
+        flex-direction: column !important;
+        gap: 12px !important;
+        text-align: center !important;
     }
 
     .header-left {
-        flex-direction: column;
-        gap: 10px;
+        justify-content: center !important;
     }
 
     .logo-container {
-        flex-direction: column;
-        gap: 5px;
+        flex-direction: column !important;
+        gap: 5px !important;
     }
 
     .logo-text-brand {
-        font-size: 1.4rem;
+        font-size: 1.3rem !important;
     }
 
     .beans-svg {
-        width: 55px;
+        width: 50px !important;
     }
 
-    /* 4. Horizontal Navigation & Search Bar */
+    .cat-chip {
+        padding: 6px 10px !important;
+        font-size: 0.75rem !important;
+        box-shadow: 2px 2px 0px var(--black) !important;
+        white-space: nowrap !important;
+    }
+
     .category-scroll {
-        padding: 10px 15px;
-        flex-wrap: nowrap;
-        overflow-x: auto;
+        padding: 8px 10px !important;
+        flex-wrap: nowrap !important;
+        overflow-x: auto !important;
         -webkit-overflow-scrolling: touch;
     }
 
     .nav-buttons-container {
-        flex-shrink: 0;
+        flex-shrink: 0 !important;
     }
 
-    .cat-chip {
-        padding: 6px 12px;
-        font-size: 0.8rem;
-        box-shadow: 2px 2px 0px var(--black);
+    .search-wrapper-box {
+        margin-left: 10px !important;
+        flex-shrink: 0 !important;
     }
 
     .search-input-field.expanded-search {
-        width: 140px;
-        font-size: 0.8rem;
+        width: 130px !important;
+        font-size: 0.75rem !important;
     }
 
-    /* 5. Product Cards & Sections */
     .section-title {
-        font-size: 1.3rem;
-        margin: 20px 0 10px 0;
-        border-left-width: 6px;
-        padding-left: 10px;
+        font-size: 1.3rem !important;
+        margin: 20px 0 10px 0 !important;
+        border-left-width: 6px !important;
+        padding-left: 10px !important;
     }
 
     .menu-card {
-        box-shadow: 4px 4px 0px var(--black);
+        box-shadow: 4px 4px 0px var(--black) !important;
     }
 
     .img-wrap {
-        height: 140px;
+        height: 160px !important;
     }
 
-    /* 6. Modals & Popups */
+    .product-name {
+        font-size: 1rem !important;
+        height: auto !important;
+        min-height: 40px !important;
+    }
+
     .modal-dialog {
-        margin: 10px;
+        margin: 10px !important;
     }
 
     .modal-content {
-        box-shadow: 6px 6px 0px #000;
-        border-width: 3px;
+        box-shadow: 6px 6px 0px #000 !important;
+        border-width: 3px !important;
     }
 
-    /* 7. Footer */
     .footer-kraft {
-        padding: 30px 15px 15px;
-        margin-top: 30px;
+        padding: 30px 15px 15px !important;
+        margin-top: 30px !important;
+        text-align: center !important;
+    }
+
+    .footer-links {
+        padding-left: 0 !important;
     }
 }
