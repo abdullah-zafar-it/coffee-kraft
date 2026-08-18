@@ -210,29 +210,35 @@ function render() {
             if (filteredProducts.length > 0) {
                 display.innerHTML += `<div class="col-12"><h2 id="${k}" class="section-title">${cats[k]}</h2></div>`;
 
+                let cardsHtml = '<div class="cards-horizontal-row">';
+
                 filteredProducts.forEach(p => {
                     let out = stock[p.n] <= 0;
                     visibleCardsCount++;
-                    display.innerHTML += `
-                    <div class="col-12 col-sm-6 col-md-4 col-lg-3 mb-4 d-flex justify-content-center">
-                        <div class="menu-card w-100">
-                            ${out ? '<div class="out-label">OUT OF STOCK</div>' : ''}
-                            <div class="img-wrap"><img src="${p.img}" alt="${p.n}"></div>
-                            <div class="card-body">
-                                <div class="product-name">${p.n}</div>
-                                <div class="price-badge">Rs. ${p.p}</div>
-                                <div class="stock-label small">QUANTITY: ${stock[p.n]}</div>
-                                <div class="qty-group">
-                                    <button class="qty-btn" onclick="q('${p.n}',-1)">-</button>
-                                    <span id="q-${p.n.replace(/\s/g, '')}">1</span>
-                                    <button class="qty-btn" onclick="q('${p.n}',1)">+</button>
-                                </div>
-                                <button class="btn-bag" ${out ? 'disabled' : ''} onclick="add('${p.n}',${p.p})">ADD TO BAG</button>
-                            </div>
-                        </div>
-                    </div>`;
+                    cardsHtml += `
+        <div class="card-item-box">
+            <div class="menu-card">
+                ${out ? '<div class="out-label">OUT OF STOCK</div>' : ''}
+                <div class="img-wrap"><img src="${p.img}" alt="${p.n}"></div>
+                <div class="card-body">
+                    <div class="product-name">${p.n}</div>
+                    <div class="price-badge">Rs. ${p.p}</div>
+                    <div class="stock-label small">QUANTITY: ${stock[p.n]}</div>
+                    <div class="qty-group">
+                        <button class="qty-btn" onclick="q('${p.n}',-1)">-</button>
+                        <span id="q-${p.n.replace(/\s/g, '')}">1</span>
+                        <button class="qty-btn" onclick="q('${p.n}',1)">+</button>
+                    </div>
+                    <button class="btn-bag" ${out ? 'disabled' : ''} onclick="add('${p.n}',${p.p})">ADD TO BAG</button>
+                </div>
+            </div>
+        </div>`;
                 });
+
+                cardsHtml += '</div>';
+                display.innerHTML += cardsHtml;
             }
+
         }
     }
 
