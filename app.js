@@ -44,7 +44,6 @@ const products = [
 ];
 
 let stock = {};
-// Users are stored in MongoDB database now
 let curUser = JSON.parse(sessionStorage.getItem('kActive')) || null;
 let savedDetails = JSON.parse(localStorage.getItem('kDetails')) || {};
 let bag = [];
@@ -61,7 +60,6 @@ async function loadInventory() {
     } catch (err) {
         console.error("Failed to load inventory from server:", err);
     }
-    // Continue checking authentication status
     checkAuthStatus();
 }
 
@@ -132,7 +130,6 @@ async function handleGateSignUp() {
             document.getElementById('gate_su_p').value = '';
             document.getElementById('gate_su_addr').value = '';
 
-            // Switch to Sign In tab and pre-fill username
             switchGateTab('signin');
             document.getElementById('gate_li_u').value = u;
             document.getElementById('gate_li_p').value = '';
@@ -156,17 +153,14 @@ function checkAuthStatus() {
     }
 }
 
-// Dynamic Track Order Handler Engine
 function openTrackOrderModal(e) {
     e.preventDefault();
     if (!curUser) return alert("Please Login first!");
 
-    // Random Rider Selection Array Matrix
     const riders = ["Sameer ", "Ammad ", "Faisal ", "Ali Moaz "];
     const randomRider = riders[Math.floor(Math.random() * riders.length)];
     const randomPhone = "+92 3" + Math.floor(100000000 + Math.random() * 900000000);
 
-    // Interface targets replacement
     document.getElementById('rider-name').innerText = randomRider;
     document.getElementById('rider-phone').innerText = randomPhone;
 
@@ -179,7 +173,6 @@ function openTrackOrderModal(e) {
         itemsDisplay.innerHTML = `<div>No active items in the bag. Add items to track delivery!</div>`;
     }
 
-    // Launch standard bootstrap instance safely
     new bootstrap.Modal(document.getElementById('trackOrderModal')).show();
 }
 
@@ -208,7 +201,6 @@ function render() {
 
     for (let k in cats) {
         if (currentActiveCategory === 'all' || currentActiveCategory === k) {
-
             let filteredProducts = products.filter(p => {
                 const matchesCategory = p.cat === k;
                 const matchesSearch = p.n.toLowerCase().includes(searchQueryGlobal);
@@ -221,9 +213,11 @@ function render() {
                 filteredProducts.forEach(p => {
                     let out = stock[p.n] <= 0;
                     visibleCardsCount++;
-                    display.innerHTML += `<div class="col-lg-3 col-md-4 col-sm-6 mb-4">
-                        <div class="menu-card">${out ? '<div class="out-label">OUT OF STOCK</div>' : ''}
-                            <div class="img-wrap"><img src="${p.img}"></div>
+                    display.innerHTML += `
+                    <div class="col-12 col-sm-6 col-md-4 col-lg-3 mb-4 d-flex justify-content-center">
+                        <div class="menu-card w-100">
+                            ${out ? '<div class="out-label">OUT OF STOCK</div>' : ''}
+                            <div class="img-wrap"><img src="${p.img}" alt="${p.n}"></div>
                             <div class="card-body">
                                 <div class="product-name">${p.n}</div>
                                 <div class="price-badge">Rs. ${p.p}</div>
@@ -302,7 +296,6 @@ async function confirmOrder() {
     document.getElementById('order-loader').style.display = 'flex';
     localStorage.setItem('kDetails', JSON.stringify({ name, phone, address: addr }));
 
-    // Payload module configuration object
     const orderData = {
         name: name,
         phone: phone,
@@ -313,7 +306,6 @@ async function confirmOrder() {
     };
 
     try {
-        // Fetch to local backend API routes
         const response = await fetch('/api/orders', {
             method: 'POST',
             headers: {
@@ -357,7 +349,6 @@ function loadRestockOptions() {
     });
 }
 
-// Restock mechanism
 async function applyRestock() {
     const sel = document.querySelector('input[name="r_prod"]:checked');
     const qty = parseInt(document.getElementById('restock-qty').value);
@@ -395,5 +386,4 @@ function logout() {
     location.reload();
 }
 
-// Initialize Inventory and check Authentication verification on startup
 loadInventory();
