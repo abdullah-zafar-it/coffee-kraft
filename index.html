@@ -22,21 +22,21 @@
                     BREW</h2>
 
                 <div class="privacy-modal-body mb-3">
-                    <h5>Order Status</h5>
-                    <p class="text-success"><i class="fas fa-motorcycle me-2"></i> <b>Rider is on the way!</b></p>
-
-                    <h5>Estimated Delivery Time</h5>
-                    <p class="fs-4 text-dark fw-bold"><i class="fas fa-clock me-2"></i> 25 Minutes</p>
-
-                    <h5>Rider Details</h5>
-                    <p><i class="fas fa-user me-2"></i> Name: <span id="rider-name">Loading...</span></p>
-                    <p><i class="fas fa-phone me-2"></i> Contact: <span id="rider-phone">Loading...</span></p>
-
-                    <h5>Order Details</h5>
-                    <div id="track-order-items" class="small text-muted">No active items found. Please place an order
-                        first!</div>
+                    <div class="mb-3">
+                        <label class="fw-bold mb-1">Enter Your Registered Email:</label>
+                        <div class="d-flex gap-2">
+                            <input type="email" id="track_email_input" class="checkout-input form-control mb-0"
+                                placeholder="name@example.com">
+                            <button class="btn-bag px-3" style="width: auto;"
+                                onclick="searchOrderByEmail()">TRACK</button>
+                        </div>
+                    </div>
+                    <hr style="border-top: 2px solid var(--black);">
+                    <div id="track-details-display">
+                        <p class="text-muted text-center m-0">Enter your email above to track live status, receipt &
+                            timings.</p>
+                    </div>
                 </div>
-
                 <button class="cat-chip w-100 bg-dark text-white" data-bs-dismiss="modal">CLOSE</button>
             </div>
         </div>
@@ -95,8 +95,7 @@
                 <input type="text" id="gate_su_u" class="gate-input form-control" placeholder="New Username">
                 <input type="password" id="gate_su_p" class="gate-input form-control"
                     placeholder="Password (Min 6 Chars)">
-                <textarea id="gate_su_addr" class="gate-input form-control" placeholder="Delivery Address"
-                    rows="2"></textarea>
+                <input type="password" id="gate_su_cp" class="gate-input form-control" placeholder="Confirm Password">
                 <button class="gate-btn" onclick="handleGateSignUp()">REGISTER</button>
             </div>
         </div>
@@ -216,6 +215,8 @@
             <div class="modal-content p-4">
                 <div id="admin-login-ui">
                     <h4 class="fw-bold mb-3 text-center">ADMIN ACCESS</h4>
+
+
                     <input type="text" id="adm_u" class="checkout-input form-control" placeholder="USERNAME">
                     <input type="password" id="adm_p" class="checkout-input form-control" placeholder="PASSWORD">
                     <div class="row g-2">
@@ -262,17 +263,19 @@
                     </div>
                     <div class="col-md-7 ps-md-4">
                         <h2 class="fw-bold mb-3">CHECKOUT</h2>
-                        <input type="text" id="f_name" class="checkout-input form-control" placeholder="NAME">
-                        <input type="text" id="f_phone" class="checkout-input form-control" placeholder="PHONE">
+                        <input type="text" id="f_name" class="checkout-input form-control" placeholder="FULL NAME">
+                        <input type="email" id="f_email" class="checkout-input form-control"
+                            placeholder="EMAIL (FOR TRACKING & RECEIPT)">
+                        <input type="text" id="f_phone" class="checkout-input form-control" placeholder="PHONE NUMBER">
                         <textarea id="f_address" class="checkout-input form-control"
-                            placeholder="FULL ADDRESS"></textarea>
+                            placeholder="DELIVERY ADDRESS"></textarea>
 
-                        <div class="fw-bold mb-1 small">PAYMENT METHOD:</div>
-                        <select id="f_pay" class="checkout-input form-control" onchange="toggleCardDetails()">
-                            <option value="COD">Cash on Delivery</option>
-                            <option value="CARD">Credit / Debit Card</option>
+                        <div class="fw-bold mb-1 small">CHOOSE PAYMENT METHOD:</div>
+                        <select id="f_pay" class="checkout-input form-select" onchange="toggleCardDetails()">
+                            <option value="COD" selected>💵 Cash on Delivery (COD)</option>
+                            <option value="CARD">💳 Debit / Credit Card</option>
+                            <option value="ONLINE">📱 JazzCash / Easypaisa (On Delivery)</option>
                         </select>
-
                         <div id="card-panel"
                             style="display:none; border:2px dashed #000; padding:12px; margin-bottom:12px; background:#fff;">
                             <input type="text" id="cc_num" class="checkout-input form-control"

@@ -113,23 +113,28 @@ async function handleGateSignIn() {
 }
 
 async function handleGateSignUp() {
-    let u = document.getElementById('gate_su_u').value.trim(), p = document.getElementById('gate_su_p').value, a = document.getElementById('gate_su_addr').value;
-    if (!u || !p) return alert("Fields cannot be empty!");
+    let u = document.getElementById('gate_su_u').value.trim();
+    let p = document.getElementById('gate_su_p').value;
+    let cp = document.getElementById('gate_su_cp').value;
+
+    if (!u || !p || !cp) return alert("All fields are required!");
     if (p.length < 6) return alert("Password must be at least 6 characters!");
+    if (p !== cp) return alert("Passwords do not match!");
 
     try {
         const response = await fetch('/api/auth/register', {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ user: u, pass: p, addr: a })
+            body: JSON.stringify({ user: u, pass: p })
         });
         const result = await response.json();
         if (result.success) {
             alert("Registration Successful! Please Sign In.");
             document.getElementById('gate_su_u').value = '';
             document.getElementById('gate_su_p').value = '';
-            document.getElementById('gate_su_addr').value = '';
+            document.getElementById('gate_su_cp').value = '';
 
+            // Switch to Sign In tab and pre-fill username
             switchGateTab('signin');
             document.getElementById('gate_li_u').value = u;
             document.getElementById('gate_li_p').value = '';
@@ -140,7 +145,6 @@ async function handleGateSignUp() {
         alert("Server connection failed during registration!");
     }
 }
-
 function checkAuthStatus() {
     curUser = JSON.parse(sessionStorage.getItem('kActive'));
     if (curUser) {
