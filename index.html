@@ -211,27 +211,35 @@
             </div>
         </div>
     </div>
-    <div class="modal fade" id="adminModal" tabindex="-1">
+    <!-- ADMIN MODAL -->
+    <div class="modal fade" id="adminModal" tabindex="-1" aria-hidden="true">
         <div class="modal-dialog modal-dialog-centered">
-            <div class="modal-content p-4">
-                <div id="admin-login-ui">
-                    <h4 class="fw-bold mb-3 text-center">ADMIN ACCESS</h4>
-                    <input type="text" id="adm_u" class="checkout-input form-control" placeholder="USERNAME">
-                    <input type="password" id="adm_p" class="checkout-input form-control" placeholder="PASSWORD">
-                    <div class="row g-2">
-                        <div class="col-6"><button class="cat-chip bg-secondary text-white w-100"
-                                data-bs-dismiss="modal">BACK</button></div>
-                        <div class="col-6"><button class="cat-chip w-100 bg-dark text-white"
-                                onclick="handleAdminLogin()">CONFIRM</button></div>
-                    </div>
-                </div>
-                <div id="admin-dash-ui" style="display:none;">
-                    <h4 class="fw-bold mb-3 text-center">RESTOCK PANEL</h4>
-                    <!-- RESTOCK PANEL INSIDE ADMIN MODAL -->
-                    <div id="admin-dash-ui" style="display:none;">
-                        <h5 class="fw-bold mb-3 text-center">RESTOCK PANEL</h5>
+            <div class="modal-content"
+                style="background: #ebdccb; border: 3px solid #000; box-shadow: 6px 6px 0px #000;">
+                <div class="modal-body p-4">
 
-                        <!-- Category Dropdown with proper options -->
+                    <!-- 1. ADMIN LOGIN VIEW -->
+                    <div id="admin-login-ui">
+                        <h4 class="fw-bold text-center mb-3">ADMIN ACCESS</h4>
+                        <input type="text" id="adm_u" class="form-control checkout-input mb-2"
+                            placeholder="USERNAME (admin)">
+                        <input type="password" id="adm_p" class="form-control checkout-input mb-3"
+                            placeholder="PASSWORD (admin123)">
+                        <div class="row g-2">
+                            <div class="col-6">
+                                <button class="btn btn-secondary w-100 fw-bold" data-bs-dismiss="modal">CANCEL</button>
+                            </div>
+                            <div class="col-6">
+                                <button class="btn btn-dark w-100 fw-bold" onclick="handleAdminLogin()">LOGIN</button>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- 2. ADMIN RESTOCK DASHBOARD VIEW -->
+                    <div id="admin-dash-ui" style="display: none;">
+                        <h4 class="fw-bold text-center mb-3">RESTOCK PANEL</h4>
+
+                        <!-- Category Selector -->
                         <div class="mb-3">
                             <label class="fw-bold small mb-1">SELECT CATEGORY</label>
                             <select id="restock-cat" class="form-select checkout-input" onchange="loadRestockOptions()">
@@ -243,11 +251,11 @@
                             </select>
                         </div>
 
-                        <!-- Product Selection List -->
+                        <!-- Products List Container -->
                         <div class="mb-3">
                             <label class="fw-bold small mb-1">SELECT PRODUCT</label>
-                            <div id="restock-list" class="border p-2 bg-white"
-                                style="max-height: 140px; overflow-y: auto;">
+                            <div id="restock-list" class="border border-dark p-2 bg-white"
+                                style="max-height: 150px; overflow-y: auto;">
                                 <span class="text-muted small">Choose category first</span>
                             </div>
                         </div>
@@ -259,7 +267,7 @@
                                 placeholder="e.g. 10" min="1">
                         </div>
 
-                        <!-- Action Buttons -->
+                        <!-- Buttons -->
                         <div class="row g-2">
                             <div class="col-6">
                                 <button class="btn btn-secondary w-100 fw-bold" onclick="handleAdminLogout()">BACK
@@ -271,70 +279,70 @@
                             </div>
                         </div>
                     </div>
+
                 </div>
             </div>
         </div>
-
-        <div class="modal fade" id="cartModal" tabindex="-1">
-            <div class="modal-dialog modal-lg modal-dialog-centered">
-                <div class="modal-content p-4">
-                    <div class="row">
-                        <div class="col-md-5 border-end border-dark">
-                            <h2 class="fw-bold mb-3">YOUR BAG</h2>
-                            <div id="cart-list" style="max-height: 200px; overflow-y: auto;"></div>
-                            <div class="h4 p-3 bg-dark text-white fw-bold border border-dark mt-2" id="cart-total">Rs. 0
-                            </div>
+    </div>
+    <div class="modal fade" id="cartModal" tabindex="-1">
+        <div class="modal-dialog modal-lg modal-dialog-centered">
+            <div class="modal-content p-4">
+                <div class="row">
+                    <div class="col-md-5 border-end border-dark">
+                        <h2 class="fw-bold mb-3">YOUR BAG</h2>
+                        <div id="cart-list" style="max-height: 200px; overflow-y: auto;"></div>
+                        <div class="h4 p-3 bg-dark text-white fw-bold border border-dark mt-2" id="cart-total">Rs. 0
                         </div>
-                        <div class="col-md-7 ps-md-4">
-                            <h2 class="fw-bold mb-3">CHECKOUT</h2>
-                            <input type="text" id="f_name" class="checkout-input form-control" placeholder="NAME">
-                            <input type="text" id="f_phone" class="checkout-input form-control" placeholder="PHONE">
-                            <textarea id="f_address" class="checkout-input form-control"
-                                placeholder="FULL ADDRESS"></textarea>
-                            <div class="fw-bold mb-1 small">CHOOSE PAYMENT METHOD:</div>
-                            <select id="f_pay" class="checkout-input form-select" onchange="togglePaymentPanels()">
-                                <option value="COD" selected>💵 Cash on Delivery (COD)</option>
-                                <option value="CARD">💳 Credit / Debit Card</option>
-                                <option value="JAZZCASH">📱 JazzCash Account</option>
-                                <option value="EASYPAISA">📱 Easypaisa Account</option>
-                            </select>
+                    </div>
+                    <div class="col-md-7 ps-md-4">
+                        <h2 class="fw-bold mb-3">CHECKOUT</h2>
+                        <input type="text" id="f_name" class="checkout-input form-control" placeholder="NAME">
+                        <input type="text" id="f_phone" class="checkout-input form-control" placeholder="PHONE">
+                        <textarea id="f_address" class="checkout-input form-control"
+                            placeholder="FULL ADDRESS"></textarea>
+                        <div class="fw-bold mb-1 small">CHOOSE PAYMENT METHOD:</div>
+                        <select id="f_pay" class="checkout-input form-select" onchange="togglePaymentPanels()">
+                            <option value="COD" selected>💵 Cash on Delivery (COD)</option>
+                            <option value="CARD">💳 Credit / Debit Card</option>
+                            <option value="JAZZCASH">📱 JazzCash Account</option>
+                            <option value="EASYPAISA">📱 Easypaisa Account</option>
+                        </select>
 
-                            <div id="card-panel"
-                                style="display:none; border:2px dashed #000; padding:12px; margin-bottom:12px; background:#fff;">
-                                <input type="text" id="cc_num" class="checkout-input form-control mb-2"
-                                    placeholder="16 DIGIT CARD NUMBER" maxlength="16">
-                                <div class="row g-2">
-                                    <div class="col-6"><input type="text" id="cc_exp"
-                                            class="checkout-input form-control" placeholder="MM/YY" maxlength="5"></div>
-                                    <div class="col-6"><input type="password" id="cc_cvv"
-                                            class="checkout-input form-control" placeholder="CVV (3 DIGIT)"
-                                            maxlength="3">
-                                    </div>
+                        <div id="card-panel"
+                            style="display:none; border:2px dashed #000; padding:12px; margin-bottom:12px; background:#fff;">
+                            <input type="text" id="cc_num" class="checkout-input form-control mb-2"
+                                placeholder="16 DIGIT CARD NUMBER" maxlength="16">
+                            <div class="row g-2">
+                                <div class="col-6"><input type="text" id="cc_exp" class="checkout-input form-control"
+                                        placeholder="MM/YY" maxlength="5"></div>
+                                <div class="col-6"><input type="password" id="cc_cvv"
+                                        class="checkout-input form-control" placeholder="CVV (3 DIGIT)" maxlength="3">
                                 </div>
                             </div>
+                        </div>
 
-                            <!-- JAZZCASH / EASYPAISA PANEL -->
-                            <div id="wallet-panel"
-                                style="display:none; border:2px dashed #000; padding:12px; margin-bottom:12px; background:#fff;">
-                                <label class="fw-bold small mb-1" id="wallet-label">Mobile Account Number:</label>
-                                <input type="tel" id="wallet_num" class="checkout-input form-control mb-0"
-                                    placeholder="03XXXXXXXXX (11 Digits)" maxlength="11">
-                            </div>
+                        <!-- JAZZCASH / EASYPAISA PANEL -->
+                        <div id="wallet-panel"
+                            style="display:none; border:2px dashed #000; padding:12px; margin-bottom:12px; background:#fff;">
+                            <label class="fw-bold small mb-1" id="wallet-label">Mobile Account Number:</label>
+                            <input type="tel" id="wallet_num" class="checkout-input form-control mb-0"
+                                placeholder="03XXXXXXXXX (11 Digits)" maxlength="11">
+                        </div>
 
-                            <div class="row g-2">
-                                <div class="col-6"><button class="cat-chip bg-secondary text-white w-100"
-                                        data-bs-dismiss="modal">BACK</button></div>
-                                <div class="col-6"><button class="cat-chip w-100 bg-dark text-white"
-                                        onclick="confirmOrder()">CONFIRM ORDER</button></div>
-                            </div>
+                        <div class="row g-2">
+                            <div class="col-6"><button class="cat-chip bg-secondary text-white w-100"
+                                    data-bs-dismiss="modal">BACK</button></div>
+                            <div class="col-6"><button class="cat-chip w-100 bg-dark text-white"
+                                    onclick="confirmOrder()">CONFIRM ORDER</button></div>
                         </div>
                     </div>
                 </div>
             </div>
         </div>
+    </div>
 
-        <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
-        <script src="/app.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="/app.js"></script>
 </body>
 
 </html>
