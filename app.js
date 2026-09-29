@@ -50,17 +50,107 @@ let bag = [];
 let currentActiveCategory = 'all';
 let searchQueryGlobal = '';
 
+// 1. Initial Stock Fallback
+function initDefaultStock() {
+    products.forEach(p => {
+        if (stock[p.n] === undefined || isNaN(stock[p.n])) {
+            stock[p.n] = 20;
+        }
+    });
+}
+
+// 2. Load Inventory from Server
 async function loadInventory() {
+    initDefaultStock();
     try {
         const response = await fetch('/api/inventory');
-        const result = await response.json();
-        if (result.success) {
-            stock = result.inventory;
+        if (response.ok) {
+            const result = await response.json();
+            if (result.success && result.inventory) {
+                for (let item in result.inventory) {
+                    stock[item] = Number(result.inventory[item]) || 0;
+                }
+            }
         }
     } catch (err) {
-        console.error("Failed to load inventory from server:", err);
+        console.warn("Using offline/local stock state:", err.message);
     }
     checkAuthStatus();
+    render();
+}
+
+// 3. Load Products based on Category in Restock Panel
+function loadRestockOptions() {
+    const catSelect = document.getElementById('restock-cat');
+    const list = document.getElementById('restock-list');
+    if (!catSelect || !list) return;
+
+    const cat = catSelect.value;
+    list.innerHTML = '';
+
+    if (!cat) {
+        list.innerHTML = '<span class="text-muted small">Choose category first</span>';
+        return;
+    }
+
+    const filtered = products.filter(p => p.cat === cat);
+    if (filtered.length === 0) {
+        list.innerHTML = '<span class="text-muted small">No products found</span>';
+        return;
+    }
+
+    filtered.forEach(p => {
+        const currentQty = (stock[p.n] !== undefined && !isNaN(stock[p.n])) ? stock[p.n] : 0;
+        list.innerHTML += `
+            <div class="form-check my-1">
+                <input class="form-check-input" type="radio" name="r_prod" id="r_${p.n.replace(/\s+/g, '')}" value="${p.n}">
+                <label class="form-check-label small" for="r_${p.n.replace(/\s+/g, '')}">
+                    <b>${p.n}</b> (Current: ${currentQty})
+                </label>
+            </div>
+        `;
+    });
+}
+
+// 4. Apply Restock
+async function applyRestock() {
+    const sel = document.querySelector('input[name="r_prod"]:checked');
+    const qtyInput = document.getElementById('restock-qty');
+    const qty = parseInt(qtyInput ? qtyInput.value : 0);
+
+    if (!sel || !qty || qty <= 0) {
+        return alert("Please select a product and enter a valid quantity greater than 0!");
+    }
+
+    const prodName = sel.value;
+    const current = Number(stock[prodName]) || 0;
+    stock[prodName] = current + qty;
+
+    render();
+    loadRestockOptions();
+    if (qtyInput) qtyInput.value = '';
+
+    await updateDbStock(prodName, stock[prodName]);
+    alert(`Successfully restocked ${qty} units for ${prodName}! Current Stock: ${stock[prodName]}`);
+}
+
+// 5. Admin Logout Handler
+function handleAdminLogout() {
+    const adminLoginUI = document.getElementById('admin-login-ui');
+    const adminDashUI = document.getElementById('admin-dash-ui');
+    if (adminLoginUI) adminLoginUI.style.display = 'block';
+    if (adminDashUI) adminDashUI.style.display = 'none';
+
+    const admU = document.getElementById('adm_u');
+    const admP = document.getElementById('adm_p');
+    if (admU) admU.value = '';
+    if (admP) admP.value = '';
+
+    const adminModalEl = document.getElementById('adminModal');
+    if (adminModalEl) {
+        const modalInstance = bootstrap.Modal.getInstance(adminModalEl);
+        if (modalInstance) modalInstance.hide();
+    }
 }
 
 async function updateDbStock(productName, quantity) {
@@ -195,10 +285,8 @@ function render() {
             });
 
             if (filteredProducts.length > 0) {
-                // Section Title
                 display.innerHTML += `<div class="col-12"><h2 id="${k}" class="section-title mt-4 mb-3">${cats[k]}</h2></div>`;
 
-                // Products Grid
                 filteredProducts.forEach(p => {
                     let out = (stock[p.n] !== undefined && stock[p.n] <= 0);
                     visibleCardsCount++;
@@ -230,6 +318,7 @@ function render() {
     }
     updateAuthUI();
 }
+
 function q(n, d) {
     let el = document.getElementById(`q-${n.replace(/\s/g, '')}`);
     let v = parseInt(el.innerText) + d;
@@ -284,6 +373,7 @@ function togglePaymentPanels() {
         walletPanel.style.display = 'none';
     }
 }
+
 async function confirmOrder() {
     if (!curUser) return alert("Please Login first!");
     if (bag.length === 0) return alert("Bag is empty!");
@@ -294,7 +384,6 @@ async function confirmOrder() {
     const addr = document.getElementById('f_address').value.trim();
     const pay = document.getElementById('f_pay').value;
 
-    // 1. Mandatory Email Validation
     if (!email) {
         return alert("Email address is mandatory for order confirmation and tracking!");
     }
@@ -307,7 +396,6 @@ async function confirmOrder() {
         return alert("Please fill all details (Name, Phone & Delivery Address)!");
     }
 
-    // 2. Card Validation
     if (pay === 'CARD') {
         const num = document.getElementById('cc_num').value.trim();
         const exp = document.getElementById('cc_exp').value.trim();
@@ -317,7 +405,6 @@ async function confirmOrder() {
         if (cvv.length !== 3 || !/^\d{3}$/.test(cvv)) return alert("CVV must be exactly 3 digits!");
     }
 
-    // 3. JazzCash / Easypaisa Account Validation (11 Digits, starting with 03)
     let paymentDetails = pay;
     if (pay === 'JAZZCASH' || pay === 'EASYPAISA') {
         const walletNum = document.getElementById('wallet_num').value.trim();
@@ -383,6 +470,7 @@ async function confirmOrder() {
         document.getElementById('order-loader').style.display = 'none';
     }
 }
+
 // Track Order Modal Launch & Email Search
 function openTrackOrderModal(e) {
     if (e) e.preventDefault();
