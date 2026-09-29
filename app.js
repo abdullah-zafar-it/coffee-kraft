@@ -174,10 +174,16 @@ function changeCategory(categoryName) {
 
 function render() {
     const display = document.getElementById('product-display');
+    if (!display) return;
     display.innerHTML = '';
     if (!curUser) return;
 
-    const cats = { signature: 'SIGNATURE SELECTION', hot: 'HOT BREWS', shakes: 'CHILL SHAKES', bakery: 'FRESH BAKERY' };
+    const cats = {
+        signature: 'SIGNATURE SELECTION',
+        hot: 'HOT BREWS',
+        shakes: 'CHILL SHAKES',
+        bakery: 'FRESH BAKERY'
+    };
     let visibleCardsCount = 0;
 
     for (let k in cats) {
@@ -189,33 +195,32 @@ function render() {
             });
 
             if (filteredProducts.length > 0) {
-                let categoryHtml = `<div class="col-12"><h2 id="${k}" class="section-title">${cats[k]}</h2></div>`;
-                categoryHtml += `<div class="cards-horizontal-row">`;
+                // Section Title
+                display.innerHTML += `<div class="col-12"><h2 id="${k}" class="section-title mt-4 mb-3">${cats[k]}</h2></div>`;
 
+                // Products Grid
                 filteredProducts.forEach(p => {
-                    let out = stock[p.n] <= 0;
+                    let out = (stock[p.n] !== undefined && stock[p.n] <= 0);
                     visibleCardsCount++;
-                    categoryHtml += `
-                        <div class="card-item-box">
-                            <div class="menu-card">${out ? '<div class="out-label">OUT OF STOCK</div>' : ''}
+                    display.innerHTML += `
+                        <div class="col-lg-3 col-md-4 col-sm-6 mb-4">
+                            <div class="menu-card h-100 position-relative">
+                                ${out ? '<div class="out-label">OUT OF STOCK</div>' : ''}
                                 <div class="img-wrap"><img src="${p.img}" alt="${p.n}"></div>
                                 <div class="card-body">
-                                    <div class="product-name">${p.n}</div>
-                                    <div class="price-badge">Rs. ${p.p}</div>
-                                    <div class="stock-label small">QUANTITY: ${stock[p.n] || 0}</div>
-                                    <div class="qty-group">
+                                    <div class="product-name fw-bold">${p.n}</div>
+                                    <div class="price-badge my-1">Rs. ${p.p}</div>
+                                    <div class="stock-label small mb-2">QUANTITY: ${stock[p.n] !== undefined ? stock[p.n] : 0}</div>
+                                    <div class="qty-group mb-2">
                                         <button class="qty-btn" onclick="q('${p.n}',-1)">-</button>
                                         <span id="q-${p.n.replace(/\s/g, '')}">1</span>
                                         <button class="qty-btn" onclick="q('${p.n}',1)">+</button>
                                     </div>
-                                    <button class="btn-bag" ${out ? 'disabled' : ''} onclick="add('${p.n}',${p.p})">ADD TO BAG</button>
+                                    <button class="btn-bag w-100" ${out ? 'disabled' : ''} onclick="add('${p.n}',${p.p})">ADD TO BAG</button>
                                 </div>
                             </div>
                         </div>`;
                 });
-
-                categoryHtml += `</div>`;
-                display.innerHTML += categoryHtml;
             }
         }
     }
@@ -225,7 +230,6 @@ function render() {
     }
     updateAuthUI();
 }
-
 function q(n, d) {
     let el = document.getElementById(`q-${n.replace(/\s/g, '')}`);
     let v = parseInt(el.innerText) + d;
