@@ -359,21 +359,24 @@ function ui() {
 }
 
 function togglePaymentPanels() {
-    const pay = document.getElementById('f_pay').value;
-    const cardPanel = document.getElementById('card-panel');
-    const walletPanel = document.getElementById('wallet-panel');
-    const walletLabel = document.getElementById('wallet-label');
+    const method = document.getElementById("f_pay").value;
+    const cardPanel = document.getElementById("card-panel");
+    const walletPanel = document.getElementById("wallet-panel");
+    const walletLabel = document.getElementById("wallet-label");
 
-    cardPanel.style.display = (pay === 'CARD') ? 'block' : 'none';
+    cardPanel.style.display = "none";
+    walletPanel.style.display = "none";
 
-    if (pay === 'JAZZCASH' || pay === 'EASYPAISA') {
-        walletPanel.style.display = 'block';
-        walletLabel.innerText = (pay === 'JAZZCASH') ? 'Enter JazzCash Mobile Number:' : 'Enter Easypaisa Mobile Number:';
-    } else {
-        walletPanel.style.display = 'none';
+    if (method === "CARD") {
+        cardPanel.style.display = "block";
+    } else if (method === "JAZZCASH") {
+        walletPanel.style.display = "block";
+        walletLabel.innerText = "JazzCash Mobile Number:";
+    } else if (method === "EASYPAISA") {
+        walletPanel.style.display = "block";
+        walletLabel.innerText = "Easypaisa Mobile Number:";
     }
 }
-
 async function confirmOrder() {
     if (!curUser) return alert("Please Login first!");
     if (bag.length === 0) return alert("Bag is empty!");

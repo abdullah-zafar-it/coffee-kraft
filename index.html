@@ -284,56 +284,90 @@
             </div>
         </div>
     </div>
-    <div class="modal fade" id="cartModal" tabindex="-1">
+    <div class="modal fade" id="cartModal" tabindex="-1" aria-labelledby="cartModalLabel" aria-hidden="true">
         <div class="modal-dialog modal-lg modal-dialog-centered">
-            <div class="modal-content p-4">
-                <div class="row">
+            <div class="modal-content p-4 position-relative">
+                <!-- Modal Close Icon -->
+                <button type="button" class="btn-close position-absolute top-0 end-0 m-3" data-bs-dismiss="modal"
+                    aria-label="Close"></button>
+
+                <div class="row g-4">
+                    <!-- Cart Summary (Left Side) -->
                     <div class="col-md-5 border-end border-dark">
-                        <h2 class="fw-bold mb-3">YOUR BAG</h2>
-                        <div id="cart-list" style="max-height: 200px; overflow-y: auto;"></div>
-                        <div class="h4 p-3 bg-dark text-white fw-bold border border-dark mt-2" id="cart-total">Rs. 0
+                        <h4 class="fw-bold mb-3">YOUR BAG</h4>
+                        <div id="cart-list" style="max-height: 240px; overflow-y: auto;" class="pe-2">
+                            <!-- Dynamic Cart Items -->
+                        </div>
+                        <div class="h5 p-3 bg-dark text-white fw-bold border border-dark mt-3 d-flex justify-content-between align-items-center"
+                            id="cart-total">
+                            <span>Total:</span>
+                            <span>Rs. 0</span>
                         </div>
                     </div>
-                    <div class="col-md-7 ps-md-4">
-                        <h2 class="fw-bold mb-3">CHECKOUT</h2>
-                        <input type="text" id="f_name" class="checkout-input form-control" placeholder="NAME">
-                        <input type="text" id="f_phone" class="checkout-input form-control" placeholder="PHONE">
-                        <textarea id="f_address" class="checkout-input form-control"
-                            placeholder="FULL ADDRESS"></textarea>
-                        <div class="fw-bold mb-1 small">CHOOSE PAYMENT METHOD:</div>
-                        <select id="f_pay" class="checkout-input form-select" onchange="togglePaymentPanels()">
-                            <option value="COD" selected>💵 Cash on Delivery (COD)</option>
-                            <option value="CARD">💳 Credit / Debit Card</option>
-                            <option value="JAZZCASH">📱 JazzCash Account</option>
-                            <option value="EASYPAISA">📱 Easypaisa Account</option>
-                        </select>
 
-                        <div id="card-panel"
-                            style="display:none; border:2px dashed #000; padding:12px; margin-bottom:12px; background:#fff;">
-                            <input type="text" id="cc_num" class="checkout-input form-control mb-2"
-                                placeholder="16 DIGIT CARD NUMBER" maxlength="16">
+                    <!-- Checkout Form (Right Side) -->
+                    <div class="col-md-7 ps-md-4">
+                        <h4 class="fw-bold mb-3">CHECKOUT</h4>
+
+                        <div class="mb-2">
+                            <input type="text" id="f_name" class="form-control" placeholder="Full Name" required>
+                        </div>
+
+                        <div class="mb-2">
+                            <input type="tel" id="f_phone" class="form-control" placeholder="Phone (e.g. 03001234567)"
+                                maxlength="11" required>
+                        </div>
+
+                        <div class="mb-2">
+                            <textarea id="f_address" class="form-control" rows="2" placeholder="Full Delivery Address"
+                                required></textarea>
+                        </div>
+
+                        <div class="mb-2">
+                            <label for="f_pay" class="fw-bold mb-1 small">CHOOSE PAYMENT METHOD:</label>
+                            <select id="f_pay" class="form-select" onchange="togglePaymentPanels()">
+                                <option value="COD" selected>💵 Cash on Delivery (COD)</option>
+                                <option value="CARD">💳 Credit / Debit Card</option>
+                                <option value="JAZZCASH">📱 JazzCash Account</option>
+                                <option value="EASYPAISA">📱 Easypaisa Account</option>
+                            </select>
+                        </div>
+
+                        <!-- CARD PANEL -->
+                        <div id="card-panel" class="mb-3 p-3 bg-light border border-2 border-dark"
+                            style="display: none;">
+                            <input type="text" id="cc_num" class="form-control mb-2" placeholder="16 Digit Card Number"
+                                maxlength="16" inputmode="numeric">
                             <div class="row g-2">
-                                <div class="col-6"><input type="text" id="cc_exp" class="checkout-input form-control"
-                                        placeholder="MM/YY" maxlength="5"></div>
-                                <div class="col-6"><input type="password" id="cc_cvv"
-                                        class="checkout-input form-control" placeholder="CVV (3 DIGIT)" maxlength="3">
+                                <div class="col-6">
+                                    <input type="text" id="cc_exp" class="form-control" placeholder="MM/YY"
+                                        maxlength="5">
+                                </div>
+                                <div class="col-6">
+                                    <input type="password" id="cc_cvv" class="form-control" placeholder="CVV (3 Digits)"
+                                        maxlength="3" inputmode="numeric">
                                 </div>
                             </div>
                         </div>
 
-                        <!-- JAZZCASH / EASYPAISA PANEL -->
-                        <div id="wallet-panel"
-                            style="display:none; border:2px dashed #000; padding:12px; margin-bottom:12px; background:#fff;">
+                        <!-- WALLET PANEL (JAZZCASH / EASYPAISA) -->
+                        <div id="wallet-panel" class="mb-3 p-3 bg-light border border-2 border-dark"
+                            style="display: none;">
                             <label class="fw-bold small mb-1" id="wallet-label">Mobile Account Number:</label>
-                            <input type="tel" id="wallet_num" class="checkout-input form-control mb-0"
-                                placeholder="03XXXXXXXXX (11 Digits)" maxlength="11">
+                            <input type="tel" id="wallet_num" class="form-control" placeholder="03XXXXXXXXX (11 Digits)"
+                                maxlength="11" inputmode="numeric">
                         </div>
 
-                        <div class="row g-2">
-                            <div class="col-6"><button class="cat-chip bg-secondary text-white w-100"
-                                    data-bs-dismiss="modal">BACK</button></div>
-                            <div class="col-6"><button class="cat-chip w-100 bg-dark text-white"
-                                    onclick="confirmOrder()">CONFIRM ORDER</button></div>
+                        <!-- Action Buttons -->
+                        <div class="row g-2 mt-2">
+                            <div class="col-6">
+                                <button type="button" class="btn btn-outline-dark w-100 py-2 fw-bold"
+                                    data-bs-dismiss="modal">BACK</button>
+                            </div>
+                            <div class="col-6">
+                                <button type="button" class="btn btn-dark w-100 py-2 fw-bold"
+                                    onclick="confirmOrder()">CONFIRM ORDER</button>
+                            </div>
                         </div>
                     </div>
                 </div>
