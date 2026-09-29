@@ -266,16 +266,17 @@
                         <input type="text" id="f_phone" class="checkout-input form-control" placeholder="PHONE">
                         <textarea id="f_address" class="checkout-input form-control"
                             placeholder="FULL ADDRESS"></textarea>
-
-                        <div class="fw-bold mb-1 small">PAYMENT METHOD:</div>
-                        <select id="f_pay" class="checkout-input form-control" onchange="toggleCardDetails()">
-                            <option value="COD">Cash on Delivery</option>
-                            <option value="CARD">Credit / Debit Card</option>
+                        <div class="fw-bold mb-1 small">CHOOSE PAYMENT METHOD:</div>
+                        <select id="f_pay" class="checkout-input form-select" onchange="togglePaymentPanels()">
+                            <option value="COD" selected>💵 Cash on Delivery (COD)</option>
+                            <option value="CARD">💳 Credit / Debit Card</option>
+                            <option value="JAZZCASH">📱 JazzCash Account</option>
+                            <option value="EASYPAISA">📱 Easypaisa Account</option>
                         </select>
 
                         <div id="card-panel"
                             style="display:none; border:2px dashed #000; padding:12px; margin-bottom:12px; background:#fff;">
-                            <input type="text" id="cc_num" class="checkout-input form-control"
+                            <input type="text" id="cc_num" class="checkout-input form-control mb-2"
                                 placeholder="16 DIGIT CARD NUMBER" maxlength="16">
                             <div class="row g-2">
                                 <div class="col-6"><input type="text" id="cc_exp" class="checkout-input form-control"
@@ -284,6 +285,14 @@
                                         class="checkout-input form-control" placeholder="CVV (3 DIGIT)" maxlength="3">
                                 </div>
                             </div>
+                        </div>
+
+                        <!-- JAZZCASH / EASYPAISA PANEL -->
+                        <div id="wallet-panel"
+                            style="display:none; border:2px dashed #000; padding:12px; margin-bottom:12px; background:#fff;">
+                            <label class="fw-bold small mb-1" id="wallet-label">Mobile Account Number:</label>
+                            <input type="tel" id="wallet_num" class="checkout-input form-control mb-0"
+                                placeholder="03XXXXXXXXX (11 Digits)" maxlength="11">
                         </div>
 
                         <div class="row g-2">

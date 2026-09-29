@@ -44,7 +44,6 @@ const products = [
 ];
 
 let stock = {};
-// Users are stored in MongoDB database now
 let curUser = JSON.parse(sessionStorage.getItem('kActive')) || null;
 let savedDetails = JSON.parse(localStorage.getItem('kDetails')) || {};
 let bag = [];
@@ -61,7 +60,6 @@ async function loadInventory() {
     } catch (err) {
         console.error("Failed to load inventory from server:", err);
     }
-    // Continue checking authentication status
     checkAuthStatus();
 }
 
@@ -115,24 +113,27 @@ async function handleGateSignIn() {
 }
 
 async function handleGateSignUp() {
-    let u = document.getElementById('gate_su_u').value.trim(), p = document.getElementById('gate_su_p').value, a = document.getElementById('gate_su_addr').value;
-    if (!u || !p) return alert("Fields cannot be empty!");
+    let u = document.getElementById('gate_su_u').value.trim();
+    let p = document.getElementById('gate_su_p').value;
+    let cp = document.getElementById('gate_su_cp') ? document.getElementById('gate_su_cp').value : '';
+
+    if (!u || !p || !cp) return alert("All fields are required!");
     if (p.length < 6) return alert("Password must be at least 6 characters!");
+    if (p !== cp) return alert("Passwords do not match!");
 
     try {
         const response = await fetch('/api/auth/register', {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ user: u, pass: p, addr: a })
+            body: JSON.stringify({ user: u, pass: p })
         });
         const result = await response.json();
         if (result.success) {
             alert("Registration Successful! Please Sign In.");
             document.getElementById('gate_su_u').value = '';
             document.getElementById('gate_su_p').value = '';
-            document.getElementById('gate_su_addr').value = '';
+            if (document.getElementById('gate_su_cp')) document.getElementById('gate_su_cp').value = '';
 
-            // Switch to Sign In tab and pre-fill username
             switchGateTab('signin');
             document.getElementById('gate_li_u').value = u;
             document.getElementById('gate_li_p').value = '';
@@ -154,33 +155,6 @@ function checkAuthStatus() {
         document.getElementById('welcome-gate').style.display = 'flex';
         document.getElementById('product-display').innerHTML = '';
     }
-}
-
-// Dynamic Track Order Handler Engine
-function openTrackOrderModal(e) {
-    e.preventDefault();
-    if (!curUser) return alert("Please Login first!");
-
-    // Random Rider Selection Array Matrix
-    const riders = ["Sameer ", "Ammad ", "Faisal ", "Ali Moaz "];
-    const randomRider = riders[Math.floor(Math.random() * riders.length)];
-    const randomPhone = "+92 3" + Math.floor(100000000 + Math.random() * 900000000);
-
-    // Interface targets replacement
-    document.getElementById('rider-name').innerText = randomRider;
-    document.getElementById('rider-phone').innerText = randomPhone;
-
-    const itemsDisplay = document.getElementById('track-order-items');
-    if (bag.length > 0) {
-        itemsDisplay.innerHTML = bag.map(i => `<div>• ${i.qty}x ${i.name}</div>`).join('');
-    } else if (savedDetails && savedDetails.name) {
-        itemsDisplay.innerHTML = `<div>Last order placed by ${savedDetails.name}. Preparing fresh signature blend!</div>`;
-    } else {
-        itemsDisplay.innerHTML = `<div>No active items in the bag. Add items to track delivery!</div>`;
-    }
-
-    // Launch standard bootstrap instance safely
-    new bootstrap.Modal(document.getElementById('trackOrderModal')).show();
 }
 
 function changeCategory(categoryName) {
@@ -208,7 +182,6 @@ function render() {
 
     for (let k in cats) {
         if (currentActiveCategory === 'all' || currentActiveCategory === k) {
-
             let filteredProducts = products.filter(p => {
                 const matchesCategory = p.cat === k;
                 const matchesSearch = p.n.toLowerCase().includes(searchQueryGlobal);
@@ -216,28 +189,33 @@ function render() {
             });
 
             if (filteredProducts.length > 0) {
-                display.innerHTML += `<div class="col-12"><h2 id="${k}" class="section-title">${cats[k]}</h2></div>`;
+                let categoryHtml = `<div class="col-12"><h2 id="${k}" class="section-title">${cats[k]}</h2></div>`;
+                categoryHtml += `<div class="cards-horizontal-row">`;
 
                 filteredProducts.forEach(p => {
                     let out = stock[p.n] <= 0;
                     visibleCardsCount++;
-                    display.innerHTML += `<div class="col-lg-3 col-md-4 col-sm-6 mb-4">
-                        <div class="menu-card">${out ? '<div class="out-label">OUT OF STOCK</div>' : ''}
-                            <div class="img-wrap"><img src="${p.img}"></div>
-                            <div class="card-body">
-                                <div class="product-name">${p.n}</div>
-                                <div class="price-badge">Rs. ${p.p}</div>
-                                <div class="stock-label small">QUANTITY: ${stock[p.n]}</div>
-                                <div class="qty-group">
-                                    <button class="qty-btn" onclick="q('${p.n}',-1)">-</button>
-                                    <span id="q-${p.n.replace(/\s/g, '')}">1</span>
-                                    <button class="qty-btn" onclick="q('${p.n}',1)">+</button>
+                    categoryHtml += `
+                        <div class="card-item-box">
+                            <div class="menu-card">${out ? '<div class="out-label">OUT OF STOCK</div>' : ''}
+                                <div class="img-wrap"><img src="${p.img}" alt="${p.n}"></div>
+                                <div class="card-body">
+                                    <div class="product-name">${p.n}</div>
+                                    <div class="price-badge">Rs. ${p.p}</div>
+                                    <div class="stock-label small">QUANTITY: ${stock[p.n] || 0}</div>
+                                    <div class="qty-group">
+                                        <button class="qty-btn" onclick="q('${p.n}',-1)">-</button>
+                                        <span id="q-${p.n.replace(/\s/g, '')}">1</span>
+                                        <button class="qty-btn" onclick="q('${p.n}',1)">+</button>
+                                    </div>
+                                    <button class="btn-bag" ${out ? 'disabled' : ''} onclick="add('${p.n}',${p.p})">ADD TO BAG</button>
                                 </div>
-                                <button class="btn-bag" ${out ? 'disabled' : ''} onclick="add('${p.n}',${p.p})">ADD TO BAG</button>
                             </div>
-                        </div>
-                    </div>`;
+                        </div>`;
                 });
+
+                categoryHtml += `</div>`;
+                display.innerHTML += categoryHtml;
             }
         }
     }
@@ -251,14 +229,18 @@ function render() {
 function q(n, d) {
     let el = document.getElementById(`q-${n.replace(/\s/g, '')}`);
     let v = parseInt(el.innerText) + d;
-    if (v < 1) v = 1; if (v > stock[n]) v = Math.max(1, stock[n]); el.innerText = v;
+    if (v < 1) v = 1;
+    if (v > stock[n]) v = Math.max(1, stock[n]);
+    el.innerText = v;
 }
 
 async function add(n, p) {
     let qVal = parseInt(document.getElementById(`q-${n.replace(/\s/g, '')}`).innerText);
     if (stock[n] < qVal) return alert("Out of Stock!");
     let item = bag.find(i => i.name === n);
-    if (item) item.qty += qVal; else bag.push({ name: n, price: p, qty: qVal });
+    if (item) item.qty += qVal;
+    else bag.push({ name: n, price: p, qty: qVal });
+
     stock[n] -= qVal;
     ui();
     render();
@@ -266,77 +248,185 @@ async function add(n, p) {
 }
 
 function ui() {
-    let t = 0, c = 0; const list = document.getElementById('cart-list'); list.innerHTML = '';
-    bag.forEach(i => { t += (i.price * i.qty); c += i.qty; list.innerHTML += `<div class="d-flex justify-content-between py-1 border-bottom"><span>${i.qty}x ${i.name}</span><b>Rs. ${i.price * i.qty}</b></div>`; });
-    document.getElementById('cart-count').innerText = c; document.getElementById('cart-total').innerText = "Rs. " + t;
+    let t = 0, c = 0;
+    const list = document.getElementById('cart-list');
+    list.innerHTML = '';
+    bag.forEach(i => {
+        t += (i.price * i.qty);
+        c += i.qty;
+        list.innerHTML += `<div class="d-flex justify-content-between py-1 border-bottom"><span>${i.qty}x ${i.name}</span><b>Rs. ${i.price * i.qty}</b></div>`;
+    });
+    document.getElementById('cart-count').innerText = c;
+    document.getElementById('cart-total').innerText = "Rs. " + t;
 
-    document.getElementById('f_name').value = savedDetails.name || "";
-    document.getElementById('f_phone').value = savedDetails.phone || "";
-    document.getElementById('f_address').value = savedDetails.address || (curUser ? curUser.addr : "");
+    if (document.getElementById('f_name')) document.getElementById('f_name').value = savedDetails.name || (curUser ? (curUser.user || curUser.username) : "");
+    if (document.getElementById('f_email')) document.getElementById('f_email').value = savedDetails.email || "";
+    if (document.getElementById('f_phone')) document.getElementById('f_phone').value = savedDetails.phone || "";
+    if (document.getElementById('f_address')) document.getElementById('f_address').value = savedDetails.address || "";
 }
 
-function toggleCardDetails() {
-    document.getElementById('card-panel').style.display = (document.getElementById('f_pay').value === 'CARD') ? 'block' : 'none';
-}
+function togglePaymentPanels() {
+    const pay = document.getElementById('f_pay').value;
+    const cardPanel = document.getElementById('card-panel');
+    const walletPanel = document.getElementById('wallet-panel');
+    const walletLabel = document.getElementById('wallet-label');
 
+    cardPanel.style.display = (pay === 'CARD') ? 'block' : 'none';
+
+    if (pay === 'JAZZCASH' || pay === 'EASYPAISA') {
+        walletPanel.style.display = 'block';
+        walletLabel.innerText = (pay === 'JAZZCASH') ? 'Enter JazzCash Mobile Number:' : 'Enter Easypaisa Mobile Number:';
+    } else {
+        walletPanel.style.display = 'none';
+    }
+}
 async function confirmOrder() {
     if (!curUser) return alert("Please Login first!");
     if (bag.length === 0) return alert("Bag is empty!");
 
-    const name = document.getElementById('f_name').value;
-    const phone = document.getElementById('f_phone').value;
-    const addr = document.getElementById('f_address').value;
+    const name = document.getElementById('f_name').value.trim();
+    const email = document.getElementById('f_email').value.trim();
+    const phone = document.getElementById('f_phone').value.trim();
+    const addr = document.getElementById('f_address').value.trim();
     const pay = document.getElementById('f_pay').value;
 
-    if (!name || !phone || !addr) return alert("Fill all details!");
+    // 1. Mandatory Email Validation
+    if (!email) {
+        return alert("Email address is mandatory for order confirmation and tracking!");
+    }
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    if (!emailRegex.test(email)) {
+        return alert("Please enter a valid email address (e.g. name@gmail.com)!");
+    }
 
+    if (!name || !phone || !addr) {
+        return alert("Please fill all details (Name, Phone & Delivery Address)!");
+    }
+
+    // 2. Card Validation
     if (pay === 'CARD') {
-        const num = document.getElementById('cc_num').value;
-        const exp = document.getElementById('cc_exp').value;
-        const cvv = document.getElementById('cc_cvv').value;
-        if (num.length !== 16) return alert("Card Number must be 16 digits!");
+        const num = document.getElementById('cc_num').value.trim();
+        const exp = document.getElementById('cc_exp').value.trim();
+        const cvv = document.getElementById('cc_cvv').value.trim();
+        if (num.length !== 16 || !/^\d{16}$/.test(num)) return alert("Card Number must be exactly 16 digits!");
         if (!/^\d{2}\/\d{2}$/.test(exp)) return alert("Expiry format must be MM/YY!");
-        if (cvv.length !== 3) return alert("CVV must be 3 digits!");
+        if (cvv.length !== 3 || !/^\d{3}$/.test(cvv)) return alert("CVV must be exactly 3 digits!");
+    }
+
+    // 3. JazzCash / Easypaisa Account Validation (11 Digits, starting with 03)
+    let paymentDetails = pay;
+    if (pay === 'JAZZCASH' || pay === 'EASYPAISA') {
+        const walletNum = document.getElementById('wallet_num').value.trim();
+        if (!walletNum) {
+            return alert(`Please enter your ${pay === 'JAZZCASH' ? 'JazzCash' : 'Easypaisa'} 11-digit account number!`);
+        }
+        if (!/^03\d{9}$/.test(walletNum)) {
+            return alert("Invalid Account Number! Must be exactly 11 digits starting with '03' (e.g. 03001234567).");
+        }
+        paymentDetails = `${pay} (${walletNum})`;
     }
 
     document.getElementById('order-loader').style.display = 'flex';
-    localStorage.setItem('kDetails', JSON.stringify({ name, phone, address: addr }));
+    localStorage.setItem('kDetails', JSON.stringify({ name, email, phone, address: addr }));
 
-    // Payload module configuration object
+    const now = new Date();
+    const orderTiming = now.toLocaleDateString() + " " + now.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+
     const orderData = {
+        username: curUser.user || curUser.username,
         name: name,
+        email: email.toLowerCase(),
         phone: phone,
         address: addr,
-        payment: pay,
+        payment: paymentDetails,
         items: bag.map(i => `${i.qty}x ${i.name}`).join(', '),
-        total: document.getElementById('cart-total').innerText
+        total: document.getElementById('cart-total').innerText,
+        orderTiming: orderTiming,
+        status: 'Preparing Fresh Brew ☕',
+        riderName: ["Sameer", "Ammad", "Faisal", "Ali Moaz"][Math.floor(Math.random() * 4)],
+        riderPhone: "+92 3" + Math.floor(100000000 + Math.random() * 900000000)
     };
 
+    localStorage.setItem('lastOrder_' + email.toLowerCase(), JSON.stringify(orderData));
+
     try {
-        // Fetch to local backend API routes
         const response = await fetch('/api/orders', {
             method: 'POST',
-            headers: {
-                'Content-Type': 'application/json'
-            },
+            headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify(orderData)
         });
 
         const result = await response.json();
 
         if (result.success) {
-            alert("Order Successful! ☕ Saved to MongoDB Database.");
-            bag = []; ui(); render();
-            bootstrap.Modal.getInstance(document.getElementById('cartModal')).hide();
+            alert(`Order Placed Successfully! ☕\nConfirmation receipt dispatched to: ${email}`);
+            bag = [];
+            ui();
+            render();
+
+            const cartModalEl = document.getElementById('cartModal');
+            if (cartModalEl) {
+                const modalInstance = bootstrap.Modal.getInstance(cartModalEl);
+                if (modalInstance) modalInstance.hide();
+            }
         } else {
-            alert("Database Error: " + result.error);
+            alert("Error: " + (result.error || "Failed to process order"));
         }
     } catch (err) {
+        console.error("Order dispatch error:", err);
         alert("Server Connection Failed!");
-    }
-    finally {
+    } finally {
         document.getElementById('order-loader').style.display = 'none';
     }
+}
+// Track Order Modal Launch & Email Search
+function openTrackOrderModal(e) {
+    if (e) e.preventDefault();
+    if (!curUser) return alert("Please Login first!");
+
+    const trackInput = document.getElementById('track_email_input');
+    if (savedDetails && savedDetails.email && trackInput) {
+        trackInput.value = savedDetails.email;
+        searchOrderByEmail();
+    }
+    new bootstrap.Modal(document.getElementById('trackOrderModal')).show();
+}
+
+function searchOrderByEmail() {
+    const trackInput = document.getElementById('track_email_input');
+    if (!trackInput) return;
+    const email = trackInput.value.trim().toLowerCase();
+    const display = document.getElementById('track-details-display');
+    if (!display) return;
+
+    if (!email) {
+        return alert("Please enter your order email!");
+    }
+
+    const order = JSON.parse(localStorage.getItem('lastOrder_' + email));
+
+    if (!order) {
+        display.innerHTML = `<div class="alert alert-warning p-2 text-center"><b>No active order found for:</b> ${email}</div>`;
+        return;
+    }
+
+    display.innerHTML = `
+        <div style="background: #ebdccb; border: 3px solid var(--black); padding: 15px; box-shadow: 4px 4px 0px var(--black);">
+            <div class="d-flex justify-content-between mb-2 pb-1 border-bottom border-dark">
+                <span><b>Account:</b> ${order.username}</span>
+                <span class="badge bg-dark">${order.payment}</span>
+            </div>
+            <div class="mb-1"><b>Customer:</b> ${order.name}</div>
+            <div class="mb-1"><b>Order Time:</b> ${order.orderTiming}</div>
+            <div class="mb-1"><b>Address:</b> ${order.address}</div>
+            <div class="mb-2"><b>Items:</b> ${order.items}</div>
+            <div class="mb-2 pb-1 border-bottom border-dark"><b>Total Bill:</b> <span class="badge bg-danger fs-6">${order.total}</span></div>
+            <div class="mt-2">
+                <div><b>Rider:</b> ${order.riderName} (${order.riderPhone})</div>
+                <div><b>Status:</b> <span class="text-success fw-bold">${order.status}</span></div>
+            </div>
+        </div>
+    `;
 }
 
 function showAdminLogin() { new bootstrap.Modal(document.getElementById('adminModal')).show(); }
@@ -357,7 +447,6 @@ function loadRestockOptions() {
     });
 }
 
-// Restock mechanism
 async function applyRestock() {
     const sel = document.querySelector('input[name="r_prod"]:checked');
     const qty = parseInt(document.getElementById('restock-qty').value);
@@ -387,7 +476,7 @@ function handleMenuSearch() {
 
 function updateAuthUI() {
     const authDiv = document.getElementById('auth-ui');
-    if (curUser) authDiv.innerHTML = `<button class="cat-chip" onclick="logout()">LOGOUT (${curUser.user})</button>`;
+    if (curUser) authDiv.innerHTML = `<button class="cat-chip" onclick="logout()">LOGOUT (${curUser.user || curUser.username})</button>`;
 }
 
 function logout() {
